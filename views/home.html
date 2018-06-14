@@ -1,26 +1,113 @@
 <html>
-    <head>
-        <title>Title Search</title> 
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Library</title>
 
-    </head>
-    <body>
-        <h2>
-            Search for album title:
-        </h2>
-        <form method="POST" action="/detail">
-          <div>
-            <input type="text" name="title" placeholder="title">
-            <button>Search</button>
-          </div>
-        </form>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.6.0/react.js"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.6.0/react-dom.js"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.25.0/babel.min.js"></script>
+ 
+</head>
+<body>
+
+
+
+<div id="root"></div>
+
+<script type="text/babel">
+  
+
+    class AlbumLib extends React.Component {
+      constructor(props) {
+        super(props); 
+        this.state = {
+          albums: {{{albums}}},
+          curItem: {}
+        };
         
-        <p>
-        <h2>Album index</h2>
+        this.onChange = this.onChange.bind(this);
+        
+      }  
+      
+      
+      
+      showDetails(event) {
+        let editItem = this.state.albums.find((album) => {
+          return album._id == event.target.id;
+        });
+        console.log(editItem); //currently undefined at this point
+        this.setState({curItem: editItem});
+      }
+      
+      onChange(event) {
+        var newItem = this.state.curItem;
+        newItem[event.target.name] = event.target.value
+        this.setState({curItem: newItem});
+      }
     
-            {{#each albums}}
-            <li><a href="/detail?title={{title}}">{{title}}</a></li>
-            {{/each}}
+    
+      render() {
+        return (
+          <div>
+           <Title title="Albums Library" />
+                <h3>List:</h3> <p/>
+           <AlbumList 
+                albums={this.state.albums}
+                show={this.showDetails.bind(this)}
+           />
+           <Details album={this.state.curItem} change={this.onChange}  />
+          </div>
+          );
+      }
+    }
+    
+   
+   
+    const Title = ({title}) => {
+        return (
+           <div><h2>{title}</h2></div>
+        );
+    }
+   
+   
+   
+    const AlbumList = ({albums, show}) => {
         
-        </p>
-    </body>
+        const listItems = albums.map((album) => {
+            return <li 
+                    id={album._id}
+                    key={album._id} 
+                    onClick={show}
+                    >{album.title}</li>
+          });
+          return (
+            <ul>{listItems}</ul>
+          );
+    }
+    
+
+    const Details = (props) => {
+        return (
+          <span id="details">
+            <h3>Details:</h3>
+            <div onChange={props.change}>
+            Artist : {props.album.artist || ""}<br/>
+            Title : {props.album.title || ""}<br/>
+            Label : {props.album.label || ""}<p/>
+            </div>
+          </span>
+        );
+    }
+
+
+    ReactDOM.render(<AlbumLib />, document.getElementById('root'));
+  
+</script>
+
+
+
+
+
+</body>
 </html>
